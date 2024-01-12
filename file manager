@@ -1,0 +1,70 @@
+#include <iostream>
+#include <filesystem>
+#include <string>
+
+namespace fs = std::filesystem;
+
+void listFiles(const std::string& path) {
+    for (const auto& entry : fs::directory_iterator(path)) {
+        std::cout << entry.path().filename() << "\n";
+    }
+}
+
+void createDirectory(const std::string& path, const std::string& dirName) {
+    fs::path newDirPath = path + fs::path::preferred_separator + dirName;
+    fs::create_directory(newDirPath);
+    std::cout << "Directory '" << dirName << "' created.\n";
+}
+
+void deleteFile(const std::string& filePath) {
+    fs::remove(filePath);
+    std::cout << "File '" << filePath << "' deleted.\n";
+}
+
+int main() {
+    std::string currentPath = fs::current_path().string();
+    int choice;
+
+    do {
+        std::cout << "\nSimple File Manager Menu:\n";
+        std::cout << "1. List Files in Current Directory\n";
+        std::cout << "2. Create Directory\n";
+        std::cout << "3. Delete File\n";
+        std::cout << "4. Exit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                listFiles(currentPath);
+                break;
+
+            case 2: {
+                std::string dirName;
+                std::cout << "Enter the directory name: ";
+                std::cin >> dirName;
+                createDirectory(currentPath, dirName);
+                break;
+            }
+
+            case 3: {
+                std::string fileName;
+                std::cout << "Enter the file name to delete: ";
+                std::cin >> fileName;
+                deleteFile(currentPath + fs::path::preferred_separator + fileName);
+                break;
+            }
+
+            case 4:
+                std::cout << "Exiting the file manager.\n";
+                break;
+
+            default:
+                std::cout << "Invalid choice. Please try again.\n";
+                break;
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
